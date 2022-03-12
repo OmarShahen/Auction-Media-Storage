@@ -15,7 +15,7 @@ const app = express()
 app.use(morgan('dev'))
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
-app.use(fileUpload({ createParentPath: true }))
+app.use(fileUpload({ createParentPath: true, limits: { fileSize: 50 * 1024 * 1024 } }))
 
 
 // routes
