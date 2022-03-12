@@ -31,6 +31,13 @@ app.get('/', (request, response) => {
     })
 })
 
+app.get('/test', (request, response) => {
+    return response.status(200).send({
+        accepted: true,
+        message: 'tested successfully ;)'
+    })
+})
+
 
 
 app.listen(3000, () => console.log(`server started on port ${3000}`))
