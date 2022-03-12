@@ -5,17 +5,11 @@ const fs = require('fs')
 
 
 
-const generateMediaURLs = (media) => {
+const generateMediaURLs = (host, media) => {
 
     const mediaURLs = []
-    let host = config.host
-
-    if(config.host == 'http://localhost') {
-        host = config.host + ':' + config.port
-    }
 
     for(let i=0;i<media.length;i++) {
-
         mediaURLs.push(`${host}/file-storage-service/api/auction-media/view/${media[i]._id}`)
     }
 
@@ -92,7 +86,8 @@ const fetchAuctionImages = async (request, response) => {
             ]
         })
 
-        const imagesURLs = generateMediaURLs(auctionImages)
+        const host = `${request.protocol}://${request.host}`
+        const imagesURLs = generateMediaURLs(host, auctionImages)
         
         return response.status(200).send({
             accepted: true,
@@ -125,7 +120,8 @@ const fetchAuctionVideos = async (request, response) => {
             ]
         })
 
-        const videosURLs = generateMediaURLs(auctionVideos)
+        const host = `${request.protocol}://${request.host}`
+        const videosURLs = generateMediaURLs(host, auctionVideos)
 
         return response.status(200).send({
             accepted: true,
@@ -151,8 +147,9 @@ const fetchAuctionMedia = async (request, response) => {
 
         const media = splitMediaData(auctionMedia)
 
-        media.images = generateMediaURLs(media.images)
-        media.videos = generateMediaURLs(media.videos)
+        const host = `${request.protocol}://${request.host}`
+        media.images = generateMediaURLs(host, media.images)
+        media.videos = generateMediaURLs(host, media.videos)
         
         return response.status(200).send({
             accepted: true,

@@ -24,6 +24,7 @@ app.use('/file-storage-service/api', require('./routes/fetch-file'))
 app.use('/file-storage-service/api', require('./routes/upload-media'))
 
 app.get('/', (request, response) => {
+    console.log(`${request.protocol}://${request.host}`)
     console.log(request.body)
     return response.status(200).send({
         accepted: true,
