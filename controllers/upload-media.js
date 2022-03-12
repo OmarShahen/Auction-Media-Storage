@@ -19,6 +19,27 @@ const isExtensionValid = (extension, allowedExtensions) => {
     return false
 }
 
+const checkImagesExtensionsValid = (images, allowedExtensions) => {
+    let invalidFiles = []
+
+    for(const image in images) {
+        valid = isExtensionValid(extractFileExtension(images[image].name), allowedExtensions)
+        if(!valid) {
+            invalidFiles.push(images[image].name) 
+        }
+    }
+    return invalidFiles
+}
+
+const numberOfFiles = (files) => {
+    let counter = 0
+    for(const file in files) {
+        counter++
+    }
+    
+    return counter
+}
+
 
 const uploadImage = async (request, response) => {
 
@@ -65,8 +86,8 @@ const uploadImage = async (request, response) => {
         const Media = new mediaModel(imageData)
         const saveMedia = await Media.save()
 
-        const saveImage = await request.files.auctionImage.mv(`./${ config.storageDirectory }/${ request.body.auctionID}/${ request.files.auctionImage.name }`)
-        
+        const saveImage = await request.files.auctionImage.mv()
+        `./${ config.storageDirectory }/${ request.body.auctionID}/${ request.files.auctionImage.name }`
         return response.status(200).send({
             accepted: true,
             message: 'image uploaded successfully',
@@ -153,13 +174,64 @@ const uploadMultipleImages = async (request, response) => {
 
     try {
 
-        console.log(request.files)
+        if(!request.files) {
+            return response.status(406).send({
+                accepted: false,
+                message: 'no file was uploaded',
+                service: config.service
+            })
+        }
+
+        if(!request.body.auctionID) {
+            return response.status(406).send({
+                accepted: false,
+                message: 'auction ID is required',
+                service: config.service
+            })
+        }
+
+        const invalidImages = checkImagesExtensionsValid(request.files, config.allowedImageExtension)
+        if(invalidImages != 0) {
+            return response.status(406).send({
+                accepted: false,
+                message: 'invalid images extension',
+                invalidImages: invalidImages,
+                service: config.service
+            })
+        }
+
+        if(numberOfFiles(request.files) > config.allowedImagesNumber) {
+            return response.status(406).send({
+                accepted: false,
+                message: `${config.allowedImagesNumber} or less images is acceptable`,
+                service: config.service
+            })
+        }
+
+        const images = request.files
+        for(const image in images) {
+
+            const imageData = {
+                fileName: images[image].name,
+                size: images[image].size,
+                auctionID: request.body.auctionID,
+                mediaType: 'image',
+                mimeType: images[image].mimetype,
+                path: `${ config.storageDirectory }/${ request.body.auctionID }`
+            }
+
+            const Media = new mediaModel(imageData)
+            const saveMedia = await Media.save()
+
+            const saveImage = await images[image].mv(`./${ config.storageDirectory }/${ request.body.auctionID}/${ images[image].name }`)
+        }
 
         return response.status(200).send({
             accepted: true,
-            message: 'after party',
+            message: 'images uploaded successfully',
             service: config.service
         })
+
     } catch(error) {
         console.error(error)
         return response.status(500).send({
