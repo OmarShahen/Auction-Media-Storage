@@ -1,43 +1,41 @@
-
 const mongoose = require('mongoose')
+const mediaSchema = require('./media')
 
 mongoose.connect('mongodb://localhost/auction-file-bucket', { useNewUrlParser: true, useUnifiedTopology: true })
 
 const Schema = mongoose.Schema
 
+const itemSchema = new Schema({
 
-const mediaSchema = new Schema({
-
-    fileName: {
+    auctionID: {
         type: String,
         required: true
     },
 
-    path: {
+    name: {
         type: String,
         required: true
     },
 
-    size: {
-        type: Number,
-        required: true
-    },
-
-    itemID: {
+    description: {
         type: String,
         required: true
     },
 
-    mediaType: {
-        type: String,
-        enum: ['image', 'video'], 
-    },
-
-    mimeType: {
+    condition: {
         type: String,
         required: true
+    },
+
+    category: {
+        type: String,
+        required: true
+    },
+
+    date: {
+        type: Date,
+        default: Date.now
     }
-
 })
 
-module.exports = mongoose.model('Media', mediaSchema)
+module.exports = mongoose.model('Item', itemSchema)

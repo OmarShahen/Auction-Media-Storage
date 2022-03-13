@@ -1,6 +1,7 @@
 
 const config = require('../config/config')
 const mediaModel = require('../models/media')
+const itemModel = require('../models/items')
 
 const extractFileExtension = (fileName) => {
 
@@ -40,10 +41,55 @@ const numberOfFiles = (files) => {
     return counter
 }
 
+const generateMediaURLs = (host, media) => {
 
-const uploadImage = async (request, response) => {
+    const mediaURLs = []
+
+    for(let i=0;i<media.length;i++) {
+        mediaURLs.push(`${host}/file-storage-service/api/auction-media/view/${media[i]._id}`)
+    }
+
+    return mediaURLs
+}
+
+/*
+const createItem = async (request, response) => {
 
     try {
+
+        console.log(request.body)
+
+        if(!request.body.name) {
+            return response.status(406).send({
+                accepted: false,
+                message: 'item name is required',
+                service: config.service
+            })
+        }
+
+        if(!request.body.description) {
+            return response.status(406).send({
+                accepted: false,
+                message: 'item description is required',
+                service: config.service
+            })
+        }
+
+        if(!request.body.condition) {
+            return response.status(406).send({
+                accepted: false,
+                message: 'item condition is required',
+                service: config.service
+            })
+        }
+
+        if(!request.body.category) {
+            return response.status(406).send({
+                accepted: false,
+                message: 'item category is required',
+                service: config.service
+            })
+        }
 
         if(!request.files) {
             
@@ -102,11 +148,11 @@ const uploadImage = async (request, response) => {
             service: config.service
         })
     }
-}
+}*/
 
 
 
-const uploadVideo = async (request, response) => {
+/*const uploadVideo = async (request, response) => {
 
     try {
 
@@ -167,12 +213,44 @@ const uploadVideo = async (request, response) => {
             service: config.service
         })
     }
-}
+}*/
 
 
-const uploadMultipleImages = async (request, response) => {
+const createItem = async (request, response) => {
 
     try {
+
+        if(!request.body.name) {
+            return response.status(406).send({
+                accepted: false,
+                message: 'item name is required',
+                service: config.service
+            })
+        }
+
+        if(!request.body.description) {
+            return response.status(406).send({
+                accepted: false,
+                message: 'item description is required',
+                service: config.service
+            })
+        }
+
+        if(!request.body.condition) {
+            return response.status(406).send({
+                accepted: false,
+                message: 'item condition is required',
+                service: config.service
+            })
+        }
+
+        if(!request.body.category) {
+            return response.status(406).send({
+                accepted: false,
+                message: 'item category is required',
+                service: config.service
+            })
+        }
 
         if(!request.files) {
             return response.status(406).send({
@@ -188,6 +266,15 @@ const uploadMultipleImages = async (request, response) => {
                 message: 'auction ID is required',
                 service: config.service
             })
+        }
+
+        const items = await itemModel.find({ auctionID: request.body.auctionID })
+        if(items.length != 0) {
+            return response.status(406).send({
+                accepted: true,
+                message: 'this auction already contains items',
+                service: config.service
+            }) 
         }
 
         const invalidImages = checkImagesExtensionsValid(request.files, config.allowedImageExtension)
@@ -208,27 +295,105 @@ const uploadMultipleImages = async (request, response) => {
             })
         }
 
+        const itemData = {
+            auctionID: request.body.auctionID,
+            name: request.body.name,
+            description: request.body.description,
+            condition: request.body.condition,
+            category: request.body.category
+        }
+
+        const Item = new itemModel(itemData)
+        const saveItem = await Item.save()
+
         const images = request.files
         for(const image in images) {
 
             const imageData = {
                 fileName: images[image].name,
                 size: images[image].size,
-                auctionID: request.body.auctionID,
+                itemID: saveItem._id,
                 mediaType: 'image',
                 mimeType: images[image].mimetype,
-                path: `${ config.storageDirectory }/${ request.body.auctionID }`
+                path: `${ config.storageDirectory }/${ saveItem._id.toString() }`
             }
 
             const Media = new mediaModel(imageData)
             const saveMedia = await Media.save()
 
-            const saveImage = await images[image].mv(`./${ config.storageDirectory }/${ request.body.auctionID}/${ images[image].name }`)
+            const saveImage = await images[image].mv(`./${ config.storageDirectory }/${ saveItem._id.toString() }/${ images[image].name }`)
         }
 
         return response.status(200).send({
             accepted: true,
-            message: 'images uploaded successfully',
+            message: 'item added successfully',
+            service: config.service
+        })
+
+    } catch(error) {
+        console.error(error)
+        return response.status(500).send({
+            accepted: false,
+            message: 'internal server error',
+            service: config.service
+        })
+    }
+}
+
+const getImage = async (request, response) => {
+
+    try {
+
+        const mediaFile = await MediaModel.find({ _id: request.params.mediaID })
+
+        if(mediaFile.length == 0) {
+
+            return response.status(406).send({
+                accepted: false,
+                message: 'there is no media document',
+                service: config.service
+            })
+        }
+
+        
+        return response.status(200).sendFile(
+            mediaFile[0].fileName,
+             {
+                 root: `./${ mediaFile[0].path }`
+            }
+        )   
+
+    } catch(error) {
+        console.error(error)
+        return response.status(500).send({
+            accepted: false,
+            message: 'internal server error',
+            service: config.service
+        })
+    }
+}
+
+const getImages = async (request, response) => {
+
+    try {
+
+        const itemImages = await mediaModel.find({
+            $and: [
+                {
+                    itemID: request.params.itemID
+                },
+                {
+                    mediaType: 'image'
+                }
+            ]
+        })
+
+        const host = `${request.protocol}://${request.hostname}`
+        const imagesURLs = generateMediaURLs(host, itemImages)
+        
+        return response.status(200).send({
+            accepted: true,
+            imagesURLS: imagesURLs,
             service: config.service
         })
 
@@ -243,7 +408,7 @@ const uploadMultipleImages = async (request, response) => {
 }
 
 module.exports = {
-    uploadImage,
-    uploadVideo,
-    uploadMultipleImages
+    createItem,
+    getImage,
+    getImages
 }

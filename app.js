@@ -20,8 +20,7 @@ app.use(fileUpload({ createParentPath: true, limits: { fileSize: 50 * 1024 * 102
 
 // routes
 
-app.use('/file-storage-service/api', require('./routes/fetch-file'))
-app.use('/file-storage-service/api', require('./routes/upload-media'))
+app.use('/file-storage-service/api', require('./routes/items'))
 
 app.get('/', (request, response) => {
     console.log(`${request.protocol}://${request.host}`)
