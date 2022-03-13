@@ -344,7 +344,7 @@ const getImage = async (request, response) => {
 
     try {
 
-        const mediaFile = await MediaModel.find({ _id: request.params.mediaID })
+        const mediaFile = await mediaModel.find({ _id: request.params.mediaID })
 
         if(mediaFile.length == 0) {
 
