@@ -456,6 +456,12 @@ const getAuctionItem = async (request, response) => {
         }
 
         const item = await itemModel.find({ auctionID: request.params.auctionID }).select({ '__v': 0 })
+        if(item.length == 0) {
+            return response.status(406).send({
+                accepted: false,
+                message: 'invalid auction id'
+            })
+        }
         const images = await mediaModel.find({ itemID: item[0]._id })
 
         const host = `${request.protocol}://${request.hostname}`
