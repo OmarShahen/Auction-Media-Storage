@@ -46,7 +46,7 @@ const generateMediaURLs = (host, media) => {
     const mediaURLs = []
 
     for(let i=0;i<media.length;i++) {
-        mediaURLs.push(`${host}/file-storage-service/api/auction-media/view/${media[i]._id}`)
+        mediaURLs.push(`${host}/api/${config.service}/images/${media[i]._id}`)
     }
 
     return mediaURLs
@@ -344,7 +344,7 @@ const getImage = async (request, response) => {
 
     try {
 
-        const mediaFile = await mediaModel.find({ _id: request.params.mediaID })
+        const mediaFile = await mediaModel.find({ _id: request.params.imageID })
 
         if(mediaFile.length == 0) {
 
@@ -407,8 +407,79 @@ const getImages = async (request, response) => {
     }
 }
 
+const getItem = async (request, response) => {
+
+    try {
+
+        if(!request.params.itemID) {
+            return response.status(406).send({
+                accepted: false,
+                message: 'item id is required'
+            })
+        }
+
+        const [ item, images ] = await Promise.all([
+            itemModel.find({ _id: request.params.itemID }).select({ '__v': 0 }),
+            mediaModel.find({ itemID: request.params.itemID })
+        ])
+
+        const host = `${request.protocol}://${request.hostname}`
+        const imagesURLs = generateMediaURLs(host, images)
+
+        const itemData = item[0]
+
+
+        return response.status(200).send({
+            accepted: true,
+            item: item[0],
+            images: [ ...imagesURLs ]
+        })
+
+    } catch(error) {
+        console.error(error)
+        return response.status(500).send({
+            accepted: false,
+            message: 'internal server error',
+        })
+    }
+}
+
+const getAuctionItem = async (request, response) => {
+
+    try {
+         
+        if(!request.params.auctionID) {
+            return response.status(406).send({
+                accepted: false,
+                message: 'auction id is required'
+            })
+        }
+
+        const item = await itemModel.find({ auctionID: request.params.auctionID }).select({ '__v': 0 })
+        const images = await mediaModel.find({ itemID: item[0]._id })
+
+        const host = `${request.protocol}://${request.hostname}`
+        const imagesURLs = generateMediaURLs(host, images)
+
+        return response.status(200).send({
+            accepted: true,
+            item: item[0],
+            images: [ ...imagesURLs ]
+        })
+
+    } catch(error) {
+        console.error(error)
+        return response.status(500).send({
+            accepted: false,
+            message: 'internal server error'
+        })
+    }
+}
+
 module.exports = {
     createItem,
     getImage,
-    getImages
+    getImages,
+    getItem,
+    getAuctionItem
 }
