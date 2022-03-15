@@ -2,7 +2,7 @@
 const config = require('../config/config')
 const mediaModel = require('../models/media')
 const itemModel = require('../models/items')
-const objectID = require('mongodb').ObjectID
+const ObjectID = require('mongodb').ObjectID
 
 const extractFileExtension = (fileName) => {
 
@@ -419,7 +419,7 @@ const getItem = async (request, response) => {
             })
         }
 
-        if(!objectID.isValid(request.params.itemID)) {
+        if(!ObjectID.isValid(request.params.itemID)) {
             return response.status(406).send({
                 accepted: false,
                 message: 'invalid id format'
@@ -462,8 +462,7 @@ const getAuctionItem = async (request, response) => {
                 message: 'auction id is required'
             })
         }
-
-        if(!objectID.isValid(request.params.auctionID)) {
+        if(!ObjectID.isValid(request.params.auctionID)) {
             return response.status(406).send({
                 accepted: false,
                 message: 'invalid id format'
