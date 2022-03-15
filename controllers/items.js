@@ -462,12 +462,13 @@ const getAuctionItem = async (request, response) => {
                 message: 'auction id is required'
             })
         }
-        if(!ObjectID.isValid(request.params.auctionID)) {
+
+        /*if(!ObjectID.isValid(request.params.auctionID)) {
             return response.status(406).send({
                 accepted: false,
                 message: 'invalid id format'
             })
-        }
+        }*/
 
         const item = await itemModel.find({ auctionID: request.params.auctionID }).select({ '__v': 0 })
         if(item.length == 0) {
