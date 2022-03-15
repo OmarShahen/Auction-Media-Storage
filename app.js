@@ -1,6 +1,7 @@
 const express = require('express')
 const morgan = require('morgan')
 const fileUpload = require('express-fileupload')
+const config = require('./config/config')
 
 
 
@@ -20,7 +21,8 @@ app.use(fileUpload({ createParentPath: true, limits: { fileSize: 50 * 1024 * 102
 
 // routes
 
-app.use('/file-storage-service/api', require('./routes/items'))
+app.use(`/api/${config.service}`, require('./routes/items'))
+app.use(`/api/${config.service}`, require('./routes/categories'))
 
 app.get('/', (request, response) => {
     console.log(`${request.protocol}://${request.host}`)
