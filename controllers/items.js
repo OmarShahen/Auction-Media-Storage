@@ -345,6 +345,20 @@ const getImage = async (request, response) => {
 
     try {
 
+        if(!request.params.imageID) {
+            return response.status(406).send({
+                accepted: false,
+                message: 'image id is required'
+            })
+        }
+
+        if(!ObjectID.isValid(request.params.imageID)) {
+            return response.status(406).send({
+                accepted: false,
+                message: 'invalid id format'
+            })
+        }
+
         const mediaFile = await mediaModel.find({ _id: request.params.imageID })
 
         if(mediaFile.length == 0) {
@@ -377,6 +391,13 @@ const getImage = async (request, response) => {
 const getImages = async (request, response) => {
 
     try {
+
+        if(!ObjectID.isValid(request.params.itemID)) {
+            return response.status(406).send({
+                accepted: false,
+                message: 'invalid id format'
+            })
+        }
 
         const itemImages = await mediaModel.find({
             $and: [
