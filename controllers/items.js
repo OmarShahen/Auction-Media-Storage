@@ -2,6 +2,7 @@
 const config = require('../config/config')
 const mediaModel = require('../models/media')
 const itemModel = require('../models/items')
+const categoryModel = require('../models/categories')
 const ObjectID = require('mongodb').ObjectID
 
 const extractFileExtension = (fileName) => {
@@ -266,6 +267,14 @@ const createItem = async (request, response) => {
                 accepted: false,
                 message: 'auction ID is required',
                 service: config.service
+            })
+        }
+
+        const category = await categoryModel.find({ name: request.body.category })
+        if(category.length == 0) {
+            return response.status(406).send({
+                accepted: false,
+                message: 'invalid category'
             })
         }
 
