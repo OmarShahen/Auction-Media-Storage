@@ -461,6 +461,13 @@ const getItem = async (request, response) => {
             mediaModel.find({ itemID: request.params.itemID })
         ])
 
+        if(item.length == 0) {
+            return response.status(406).send({
+                accepted: false,
+                message: 'no item with that id'
+            })
+        }
+
         const host = `${request.protocol}://${request.hostname}`
         const imagesURLs = generateMediaURLs(host, images)
 
