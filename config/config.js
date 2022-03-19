@@ -2,7 +2,7 @@
 module.exports = {
 
     host: 'http://localhost',
-    port: 3000,
+    port: 3002,
     service: 'item-service',
     storageDirectory: 'Auction',
     allowedImagesNumber: 5,
