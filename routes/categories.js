@@ -5,4 +5,6 @@ router.get('/categories', (request, response) => categoriesController.getCategor
 
 router.post('/categories', (request, response) => categoriesController.addCategory(request, response))
 
+router.post('/categories/:categoryName/sub-categories', (request, response) => categoriesController.addSubCategory(request, response))
+
 module.exports = router

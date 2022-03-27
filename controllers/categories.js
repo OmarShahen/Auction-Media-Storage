@@ -67,4 +67,64 @@ const addCategory = async (request, response) => {
     }
 }
 
-module.exports = { getCategories, addCategory }
+const addSubCategory = async (request, response) => {
+
+    try {
+
+        const subCategory = {}
+        const category = await categoryModel.find({ name: request.params.categoryName })
+
+        if(category.length == 0) {
+            return response.status(406).send({
+                accepted: false,
+                message: 'invalid category name'
+            })
+        }
+
+        if(!request.body.name) {
+            return response.status(406).send({
+                accepted: false,
+                message: 'sub-category name is required'
+            })
+        }
+
+        const getSubCat = await categoryModel.find({ subCategories: { $elemMatch: { 'name': request.body.name }}})
+
+        if(getSubCat.length != 0) {
+            return response.status(406).send({
+                accepted: false,
+                message: 'this sub-category name is taken'
+            })
+        }
+
+        subCategory['name'] = request.body.name
+
+        if(request.body.description) {
+            subCategory['description'] = request.body.description
+        }
+
+        console.log(subCategory)
+
+        const addSubCat = await categoryModel.findOneAndUpdate({
+            name: request.params.categoryName
+        }, {
+            $push: {
+                subCategories: subCategory
+            }
+        })
+
+        return response.status(200).send({
+            accepted: true,
+            message: 'sub-category added successfully'
+        })
+
+    } catch(error) {
+        console.error(error)
+        return response.status(500).send({
+            accepted: false,
+            message: 'internal server error'
+        })
+    }
+}
+
+module.exports = { getCategories, addCategory, addSubCategory }

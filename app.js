@@ -42,4 +42,4 @@ app.get('/test', (request, response) => {
 
 
 
-app.listen(config.port, () => console.log(`server started on port ${config.port}`))
+app.listen(config.port, () => console.log(`server started on port ${config.port} [${config.service}]`))

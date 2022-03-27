@@ -16,6 +16,20 @@ const categorySchema = new Schmea({
         required: true
     },
 
+    subCategories: [
+        {
+            name: {
+                type: String,
+                required: true,
+                unique: true
+            },
+
+            description: {
+                type: String,
+            }
+        }
+    ]
+
 })
 
 module.exports = mongoose.model('Category', categorySchema)
