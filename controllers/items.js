@@ -419,7 +419,7 @@ const getImages = async (request, response) => {
             ]
         })
 
-        const host = `${request.protocol}://${request.hostname}`
+        const host = `http://${config.proxy}`
         const imagesURLs = generateMediaURLs(host, itemImages)
         
         return response.status(200).send({
@@ -468,7 +468,7 @@ const getItem = async (request, response) => {
             })
         }
 
-        const host = `${request.protocol}://${request.hostname}`
+        const host = `http://${config.proxy}`
         const imagesURLs = generateMediaURLs(host, images)
 
         const itemData = item[0]
@@ -516,7 +516,7 @@ const getAuctionItem = async (request, response) => {
         }
         const images = await mediaModel.find({ itemID: item[0]._id })
 
-        const host = `${request.protocol}://${request.hostname}`
+        const host = `http://${config.proxy}`
         const imagesURLs = generateMediaURLs(host, images)
 
         return response.status(200).send({
