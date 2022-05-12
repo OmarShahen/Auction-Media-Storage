@@ -310,7 +310,7 @@ const createItem = async (request, response) => {
             name: request.body.name,
             description: request.body.description,
             condition: request.body.condition,
-            category: [request.body.categories]
+            category: request.body.categories
         }
 
         const Item = new itemModel(itemData)
