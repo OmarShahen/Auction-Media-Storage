@@ -28,7 +28,7 @@ const itemSchema = new Schema({
     },
 
     category: {
-        type: String,
+        type: Array,
         required: true
     },
 

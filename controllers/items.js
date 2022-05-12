@@ -246,10 +246,10 @@ const createItem = async (request, response) => {
             })
         }
 
-        if(!request.body.category) {
+        if(!request.body.categories) {
             return response.status(406).send({
                 accepted: false,
-                message: 'item category is required',
+                message: 'item categories is required',
                 service: config.service
             })
         }
@@ -310,7 +310,7 @@ const createItem = async (request, response) => {
             name: request.body.name,
             description: request.body.description,
             condition: request.body.condition,
-            category: request.body.category
+            category: [request.body.categories]
         }
 
         const Item = new itemModel(itemData)
