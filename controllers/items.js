@@ -270,7 +270,7 @@ const createItem = async (request, response) => {
             })
         }
 
-        const category = await categoryModel.find({ name: request.body.category })
+        const category = await categoryModel.find({ name: request.body.categories })
         if(category.length == 0) {
             return response.status(406).send({
                 accepted: false,
