@@ -226,7 +226,6 @@ const createItem = async (request, response) => {
             return response.status(406).send({
                 accepted: false,
                 message: 'item name is required',
-                service: config.service
             })
         }
 
@@ -234,7 +233,6 @@ const createItem = async (request, response) => {
             return response.status(406).send({
                 accepted: false,
                 message: 'item description is required',
-                service: config.service
             })
         }
 
@@ -242,7 +240,6 @@ const createItem = async (request, response) => {
             return response.status(406).send({
                 accepted: false,
                 message: 'item condition is required',
-                service: config.service
             })
         }
 
@@ -250,15 +247,6 @@ const createItem = async (request, response) => {
             return response.status(406).send({
                 accepted: false,
                 message: 'item categories is required',
-                service: config.service
-            })
-        }
-
-        if(!request.files) {
-            return response.status(406).send({
-                accepted: false,
-                message: 'no file was uploaded',
-                service: config.service
             })
         }
 
@@ -266,7 +254,6 @@ const createItem = async (request, response) => {
             return response.status(406).send({
                 accepted: false,
                 message: 'auction ID is required',
-                service: config.service
             })
         }
 
@@ -275,6 +262,13 @@ const createItem = async (request, response) => {
             return response.status(406).send({
                 accepted: false,
                 message: 'invalid category'
+            })
+        }
+
+        if(!request.body.image) {
+            return response.status(406).send({
+                accepted: false,
+                message: 'image url is required'
             })
         }
 
@@ -287,57 +281,26 @@ const createItem = async (request, response) => {
             }) 
         }
 
-        const invalidImages = checkImagesExtensionsValid(request.files, config.allowedImageExtension)
-        if(invalidImages != 0) {
-            return response.status(406).send({
-                accepted: false,
-                message: 'invalid images extension',
-                invalidImages: invalidImages,
-                service: config.service
-            })
-        }
 
-        if(numberOfFiles(request.files) > config.allowedImagesNumber) {
-            return response.status(406).send({
-                accepted: false,
-                message: `${config.allowedImagesNumber} or less images is acceptable`,
-                service: config.service
-            })
-        }
 
         const itemData = {
             auctionID: request.body.auctionID,
             name: request.body.name,
             description: request.body.description,
             condition: request.body.condition,
-            category: request.body.categories
+            categories: request.body.categories,
+            image: request.body.image,
+            images: request.body.images
         }
 
         const Item = new itemModel(itemData)
         const saveItem = await Item.save()
 
-        const images = request.files
-        for(const image in images) {
-
-            const imageData = {
-                fileName: images[image].name,
-                size: images[image].size,
-                itemID: saveItem._id,
-                mediaType: 'image',
-                mimeType: images[image].mimetype,
-                path: `${ config.storageDirectory }/${ saveItem._id.toString() }`
-            }
-
-            const Media = new mediaModel(imageData)
-            const saveMedia = await Media.save()
-
-            const saveImage = await images[image].mv(`./${ config.storageDirectory }/${ saveItem._id.toString() }/${ images[image].name }`)
-        }
-
         return response.status(200).send({
             accepted: true,
             message: 'item added successfully',
-            service: config.service
+            service: config.service,
+            item: saveItem
         })
 
     } catch(error) {
@@ -485,6 +448,19 @@ const getItem = async (request, response) => {
         return response.status(500).send({
             accepted: false,
             message: 'internal server error',
+        })
+    }
+}
+
+const getItems = async (request, response) => {
+
+    try {
+
+    } catch(error) {
+        console.error(error)
+        return response.status(500).send({
+            accepted: false,
+            message: 'internal server error'
         })
     }
 }

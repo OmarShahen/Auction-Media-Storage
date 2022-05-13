@@ -27,15 +27,19 @@ const itemSchema = new Schema({
         required: true
     },
 
-    category: {
+    categories: {
         type: Array,
         required: true
     },
 
-    date: {
-        type: Date,
-        default: Date.now
+    image: {
+        type: String,
+        required: true
+    },
+
+    images: {
+        type: Array
     }
-})
+}, { timestamps: true })
 
 module.exports = mongoose.model('Item', itemSchema)
