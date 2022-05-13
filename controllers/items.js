@@ -405,42 +405,13 @@ const getItem = async (request, response) => {
 
     try {
 
-        if(!request.params.itemID) {
-            return response.status(406).send({
-                accepted: false,
-                message: 'item id is required'
-            })
-        }
+        const item = await itemModel.find({ _id: request.params.itemID }).select({ '__v': 0 })
 
-        if(!ObjectID.isValid(request.params.itemID)) {
-            return response.status(406).send({
-                accepted: false,
-                message: 'invalid id format'
-            })
-        }
-
-        const [ item, images ] = await Promise.all([
-            itemModel.find({ _id: request.params.itemID }).select({ '__v': 0 }),
-            mediaModel.find({ itemID: request.params.itemID })
-        ])
-
-        if(item.length == 0) {
-            return response.status(406).send({
-                accepted: false,
-                message: 'no item with that id'
-            })
-        }
-
-        const host = `http://${config.proxy}`
-        const imagesURLs = generateMediaURLs(host, images)
-
-        const itemData = item[0]
-
+        console.log(item)
 
         return response.status(200).send({
             accepted: true,
             item: item[0],
-            images: [ ...imagesURLs ]
         })
 
     } catch(error) {
@@ -455,6 +426,30 @@ const getItem = async (request, response) => {
 const getItems = async (request, response) => {
 
     try {
+
+        const qCategory = request.query.category
+        const qItemName = request.query.itemName
+
+        let items
+
+        if(qCategory) {
+            items = await itemModel.find({
+                categories: {
+                    $in: [qCategory]
+                }
+            })
+        } else if(qItemName) {
+            items = await itemModel.find({
+                $text: { $search: qItemName }
+            })
+        } else {
+            items = await itemModel.find().limit(12)
+        }
+
+        return response.status(200).send({
+            accepted: true,
+            items: items
+        })
 
     } catch(error) {
         console.error(error)
@@ -515,5 +510,6 @@ module.exports = {
     getImage,
     getImages,
     getItem,
-    getAuctionItem
+    getAuctionItem,
+    getItems
 }

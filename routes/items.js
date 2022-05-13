@@ -16,5 +16,6 @@ router.get('/items/:itemID', (request, response) => itemsController.getItem(requ
 
 router.get('/auctions/:auctionID/items', (request, response) => itemsController.getAuctionItem(request, response))
 
+router.get('/items', (request, response) => itemsController.getItems(request, response))
 
 module.exports = router
