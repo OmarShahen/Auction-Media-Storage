@@ -18,4 +18,4 @@ const categorySchema = new Schmea({
 
 })
 
-module.exports = mongoose.model('Category', categorySchema)
+module.exports = mongoose.model('Categories', categorySchema)
