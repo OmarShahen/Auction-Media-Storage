@@ -9,15 +9,10 @@ const categorySchema = new Schmea({
         type: String,
         required: true,
         unique: true
-    },
-
-    description: {
-        type: String,
-        required: true
     }
 
 })
 
 categorySchema.index({ name: 1, description: 1 })
 
-module.exports = mongoose.model('Categories', categorySchema)
+module.exports = mongoose.model('Collection', categorySchema)

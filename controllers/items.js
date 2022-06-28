@@ -2,7 +2,7 @@
 const config = require('../config/config')
 const mediaModel = require('../models/media')
 const itemModel = require('../models/items')
-const categoryModel = require('../models/categories')
+const categoryModel = require('../models/collection')
 const { isObjectID } = require('../utils/verifyObjectID')
 
 const extractFileExtension = (fileName) => {
