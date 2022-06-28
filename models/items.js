@@ -7,7 +7,7 @@ const Schema = mongoose.Schema
 
 const itemSchema = new Schema({
 
-    auctionID: {
+    ownerID: {
         type: String,
         required: true
     },
@@ -27,19 +27,16 @@ const itemSchema = new Schema({
         required: true
     },
 
-    categories: {
-        type: Array,
-        required: true
-    },
-
-    image: {
+    category: {
         type: String,
         required: true
     },
 
-    images: {
-        type: Array
+    imageURL: {
+        type: String,
+        required: true
     }
+
 }, { timestamps: true })
 
 itemSchema.index({ name: 'text' })
