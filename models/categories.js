@@ -18,4 +18,6 @@ const categorySchema = new Schmea({
 
 })
 
+categorySchema.index({ name: 1, description: 1 })
+
 module.exports = mongoose.model('Categories', categorySchema)
