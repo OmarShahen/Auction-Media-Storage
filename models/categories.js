@@ -14,21 +14,7 @@ const categorySchema = new Schmea({
     description: {
         type: String,
         required: true
-    },
-
-    subCategories: [
-        {
-            name: {
-                type: String,
-                required: true,
-                unique: true
-            },
-
-            description: {
-                type: String,
-            }
-        }
-    ]
+    }
 
 })
 
