@@ -50,7 +50,7 @@ const addCategory = async (request, response) => {
 
         const Category = new categoryModel({
             name: request.body.name,
-            description: request.body.imageURL
+            imageURL: request.body.imageURL
         })
 
         const saveCategory = await Category.save()
