@@ -27,14 +27,16 @@ const addCategory = async (request, response) => {
         if(!request.body.name) {
             return response.status(406).send({
                 accepted: false,
-                message: 'category name is required'
+                message: 'category name is required',
+                field: 'name'
             })
         }
 
-        if(!request.body.description) {
+        if(!request.body.imageURL) {
             return response.status(406).send({
                 accepted: false,
-                message: 'category description is required'
+                message: 'category image is required',
+                field: 'imageURL'
             })
         }
 
@@ -48,7 +50,7 @@ const addCategory = async (request, response) => {
 
         const Category = new categoryModel({
             name: request.body.name,
-            description: request.body.description
+            description: request.body.imageURL
         })
 
         const saveCategory = await Category.save()

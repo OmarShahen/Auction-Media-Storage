@@ -9,10 +9,15 @@ const categorySchema = new Schmea({
         type: String,
         required: true,
         unique: true
+    },
+
+    imageURL: {
+        type: String,
+        required: true
     }
 
 })
 
-categorySchema.index({ name: 1, description: 1 })
+categorySchema.index({ name: 1 })
 
 module.exports = mongoose.model('Collection', categorySchema)
